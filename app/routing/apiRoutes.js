@@ -17,15 +17,18 @@ router.post("/friends", function (req, res) {
         JSON.parse(data).forEach((friend) => {
             var diff = 0;
             friend.scores.forEach((score, i) => {
-                diff += Math.abs(parseInt(score) - (parseInt(req.body.q[i]) || 0));
+                diff += Math.abs(parseInt(score) - (parseInt(req.body.scores[i]) || 0));
             });
             if (typeof minDiff === "undefined" || minDiff > diff) {
                 bestMatch = friend;
                 minDiff = diff;
             }
         });
+        const currFriends = JSON.parse(data);
+        currFriends.push(req.body);
+        fs.writeFileSync(path.join(__dirname, "../data/friends.js"), JSON.stringify(currFriends), 'utf8');
         res.json({ name: bestMatch.name, photo: bestMatch.photo });
-    });
+    });   
 });
 
 module.exports = router;
